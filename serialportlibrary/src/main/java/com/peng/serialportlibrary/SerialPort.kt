@@ -15,8 +15,8 @@ class SerialPort constructor(val path: String, val baudrate: Int) {
 
     private val tag = "SerialPort"
     private var mFd: FileDescriptor? = null
-    private var mFileInputStream: FileInputStream? = null
-    private var mFileOutputStream: FileOutputStream? = null
+    var mFileInputStream: FileInputStream? = null
+    var mFileOutputStream: FileOutputStream? = null
 
 
     private external fun close(fd: Int)
@@ -29,6 +29,9 @@ class SerialPort constructor(val path: String, val baudrate: Int) {
                 val anInt = descriptor.getInt(mFd)
                 Log.d(tag, "close fd :$anInt")
                 close(anInt)
+                mFd = null
+                mFileInputStream = null
+                mFileOutputStream = null
             } catch (e: NoSuchFieldException) {
                 e.printStackTrace()
             } catch (e: IllegalAccessException) {
@@ -41,6 +44,7 @@ class SerialPort constructor(val path: String, val baudrate: Int) {
 
     private external fun open(path: String, baudrate: Int): FileDescriptor?
 
+    @Throws(IOException::class)
     fun open() {
         mFd = open(path, baudrate)
         if (mFd == null) {
